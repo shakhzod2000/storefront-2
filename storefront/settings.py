@@ -41,6 +41,7 @@ INSTALLED_APPS = [
     "playground",
     "debug_toolbar",
     "store",
+    "store_custom",
     "tags",
     "likes"
 ]
@@ -87,8 +88,12 @@ WSGI_APPLICATION = "storefront.wsgi.application"
 
 DATABASES = {
     "default": {
-        "ENGINE": "django.db.backends.sqlite3",
-        "NAME": BASE_DIR / "db.sqlite3",
+        "ENGINE": "django.db.backends.postgresql",
+        "NAME": "storefront",
+        "HOST": "localhost",
+        "USERNAME": "username",
+        "PASSWORD": "password",
+        "PORT": "5432"
     }
 }
 

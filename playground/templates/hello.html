@@ -1,5 +1,13 @@
 <html>
     <body>
-        <h1>Hello {{ name }}</h1>
+        <h1>Hello {{ name }} </h1>
+        {% comment %} <h1> {{ result }} </h1> {% endcomment %}
+        {% comment %} <ul>
+            {% for product in products %}
+                <li>
+                    {{ product.customer.id }} - {{ product.customer.first_name }} - {{ product.placed_at }}
+                </li>
+            {% endfor %}
+        </ul> {% endcomment %}
     </body>
 </html>
