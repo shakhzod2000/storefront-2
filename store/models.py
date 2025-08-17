@@ -13,13 +13,13 @@ class Collection(models.Model):
     # ↓ if parent(Collection) class defined before child(Product), use ''
     # related_name='+' tells Django not to create reverse relationship
     featured_product = models.ForeignKey(
-        'Product', on_delete=models.SET_NULL, null=True, related_name='+')
+        'Product', on_delete=models.SET_NULL, null=True, related_name='+', blank=True)
     
     def __str__(self):
         return self.title
 
     class Meta:
-        ordering = ['title']  # sort Collection by 'title'
+        ordering = ['id']  # sort Collection by 'id'
 
 
 class Product(models.Model):
@@ -29,17 +29,20 @@ class Product(models.Model):
     # null=True only applies to DB, for browsers use blank=True too
     description = models.TextField(null=True, blank=True)
     unit_price = models.DecimalField(
-        max_digits=6, 
+        max_digits=6,
         decimal_places=2,
         validators=[MinValueValidator(1)])
     inventory = models.IntegerField(validators=[MinValueValidator(0)])
     last_update = models.DateTimeField(auto_now=True)  # auto_now - updates(overwrites) datetime on every Product update
-    collection = models.ForeignKey(Collection, on_delete=models.PROTECT)
+    collection = models.ForeignKey(Collection, on_delete=models.PROTECT, related_name='products')
     # ↓ Django creates reverse relationship btwn Promotion & Product
     promotions = models.ManyToManyField(Promotion, blank=True)
 
     def __str__(self):
         return self.title
+    
+    class Meta:
+        ordering=['title']
 
 
 
@@ -85,7 +88,7 @@ class Order(models.Model):
 class OrderItem(models.Model):
     # Django creates reverse relationship with Order & Product classes
     order = models.ForeignKey(Order, on_delete=models.PROTECT)
-    product = models.ForeignKey(Product, on_delete=models.PROTECT)
+    product = models.ForeignKey(Product, on_delete=models.PROTECT, related_name='orderitems')
     # prevent negative values with `PositiveSmallIntegerField()`
     # max of PositiveSmallIntegerField = 32767, 16-b int (2^15 - 1)
     quantity = models.PositiveSmallIntegerField()

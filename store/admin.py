@@ -108,6 +108,7 @@ class OrderAdmin(admin.ModelAdmin):
 
 @admin.register(models.Collection)
 class CollectionAdmin(admin.ModelAdmin):
+    autocomplete_fields = ['featured_product']
     list_display = ['title', 'products_count']
     list_per_page = 10
     search_fields = ['title']
@@ -127,7 +128,7 @@ class CollectionAdmin(admin.ModelAdmin):
     # get_queryset() returns parent model of self
     def get_queryset(self, request):
         return super().get_queryset(request).annotate(
-            products_counter=Count('product')
+            products_counter=Count('products')
         )
 
 # admin.site.register(models.Customer, CustomerAdmin)
