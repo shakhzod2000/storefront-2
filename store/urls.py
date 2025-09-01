@@ -1,11 +1,26 @@
-from django.urls import path
+from django.urls import path, include
+from rest_framework_nested import routers
 from . import views
+# from pprint import pprint  # pprint(pretty print)
+
+
+router = routers.DefaultRouter()
+router.register('products', views.ProductViewSet, basename='products')
+router.register('collections', views.CollectionViewSet)
+# pprint(router.urls)
+
+products_router = routers.NestedDefaultRouter(router, 'products', lookup='product')
+# basename = prefix for generating name of routes
+products_router.register('reviews', views.ReviewViewSet, basename='product-reviews')
 
 # pass type & variable with <type:var>
-urlpatterns = [
-    # as_view() converts ProductList to function based view
-    path('products/', views.ProductList.as_view()),
-    path('products/<int:id>/', views.ProductDetail.as_view()),
-    path('collections/', views.CollectionList.as_view(), name='collection-list'),
-    path('collections/<int:pk>/', views.collection_detail, name='collection-detail')
-]
+urlpatterns = router.urls + products_router.urls
+# urlpatterns = [
+#     path(r'', include(router.urls)),
+#     path(r'', include(products_router.urls))
+    ## as_view() converts ProductList to function based view
+    # path('products/', views.ProductList.as_view()),
+    # path('products/<int:pk>/', views.ProductDetail.as_view()),
+    # path('collections/', views.CollectionList.as_view()),
+    # path('collections/<int:pk>/', views.CollectionDetail.as_view(), name='collection-detail')
+# ]
