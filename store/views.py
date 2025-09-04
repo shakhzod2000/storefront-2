@@ -1,15 +1,17 @@
+# store/views.py
 from django.shortcuts import get_object_or_404
 from django.db.models.aggregates import Count
 from django_filters.rest_framework import DjangoFilterBackend  # gives generic filtering
 from rest_framework.filters import SearchFilter, OrderingFilter
 from rest_framework.pagination import PageNumberPagination
 from rest_framework.response import Response
-from rest_framework.viewsets import ModelViewSet
+from rest_framework.mixins import CreateModelMixin, ListModelMixin, RetrieveModelMixin, DestroyModelMixin
+from rest_framework.viewsets import ModelViewSet, GenericViewSet
 from rest_framework import status
 from .filters import ProductFilter
 from .pagination import DefaultPagination
-from .models import Product, Collection, OrderItem, Review
-from .serializers import ProductSerializer, CollectionSerializer, ReviewSerializer
+from .models import Product, Collection, OrderItem, Review, Cart, CartItem
+from .serializers import ProductSerializer, CollectionSerializer, ReviewSerializer, CartSerializer, CartItemSerializer, AddCartItemSerializer, UpdateCartItemSerializer
 
 
 # pylint: disable=no-member
@@ -42,14 +44,23 @@ class CollectionViewSet(ModelViewSet):
         products_count=Count('products')).all()
     serializer_class = CollectionSerializer
 
-    def destroy(self, request, *args, **kwargs):
-        if Product.objects.filter(collection_id=kwargs['pk']).count() > 0:
+    def delete(self, request, pk):
+        collection = get_object_or_404(Collection, pk=pk)
+        if collection.products.count > 0:
             return Response(
                 {'error': 'Collection cannot be deleted because it includes one or more products'},
-                status=status.HTTP_405_METHOD_NOT_ALLOWED
-            )
+                status=status.HTTP_405_METHOD_NOT_ALLOWED)
+        collection.delete()
+        return Response(status=status.HTTP_204_NO_CONTENT)
 
-        return super().destroy(request, *args, **kwargs)
+    # def destroy(self, request, *args, **kwargs):
+    #     if Product.objects.filter(collection_id=kwargs['pk']).count() > 0:
+    #         return Response(
+    #             {'error': 'Collection cannot be deleted because it includes one or more products'},
+    #             status=status.HTTP_405_METHOD_NOT_ALLOWED
+    #         )
+
+    #     return super().destroy(request, *args, **kwargs)
 
 
 # in ViewSets we have access to URL parameters
@@ -63,3 +74,33 @@ class ReviewViewSet(ModelViewSet):
     # pass product_id to serializer
     def get_serializer_context(self):
         return {'product_id': self.kwargs['product_pk']}
+
+
+
+class CartViewSet(CreateModelMixin, 
+                  ListModelMixin, 
+                  RetrieveModelMixin, 
+                  DestroyModelMixin, 
+                  GenericViewSet):
+    queryset = Cart.objects.prefetch_related('items__product').all()
+    serializer_class = CartSerializer
+
+
+
+class CartItemViewSet(ModelViewSet):
+    http_method_names = ['get', 'post', 'patch', 'delete']
+
+    def get_serializer_class(self):
+        if self.request.method == 'POST':
+            return AddCartItemSerializer
+        elif self.request.method == 'PATCH':
+            return UpdateCartItemSerializer
+        return CartItemSerializer
+    
+    def get_serializer_context(self):
+        return {'cart_id': self.kwargs['cart_pk']}
+
+    def get_queryset(self):
+        return CartItem.objects \
+            .filter(cart_id=self.kwargs['cart_pk']) \
+            .select_related('product')

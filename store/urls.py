@@ -1,3 +1,4 @@
+# store/urls.py
 from django.urls import path, include
 from rest_framework_nested import routers
 from . import views
@@ -7,14 +8,19 @@ from . import views
 router = routers.DefaultRouter()
 router.register('products', views.ProductViewSet, basename='products')
 router.register('collections', views.CollectionViewSet)
+router.register('carts', views.CartViewSet)
 # pprint(router.urls)
 
 products_router = routers.NestedDefaultRouter(router, 'products', lookup='product')
 # basename = prefix for generating name of routes
 products_router.register('reviews', views.ReviewViewSet, basename='product-reviews')
 
+carts_router = routers.NestedDefaultRouter(router, 'carts', lookup='cart')
+carts_router.register('items', views.CartItemViewSet, basename='cart-items')
+
+
 # pass type & variable with <type:var>
-urlpatterns = router.urls + products_router.urls
+urlpatterns = router.urls + products_router.urls + carts_router.urls
 # urlpatterns = [
 #     path(r'', include(router.urls)),
 #     path(r'', include(products_router.urls))

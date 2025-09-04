@@ -9,7 +9,7 @@ https://docs.djangoproject.com/en/5.2/topics/settings/
 For the full list of settings and their values, see
 https://docs.djangoproject.com/en/5.2/ref/settings/
 """
-
+# storefront/settings.py
 import os
 from pathlib import Path
 from dotenv import load_dotenv
@@ -48,11 +48,13 @@ INSTALLED_APPS = [
     "playground",
     "debug_toolbar",
     "store",
-    "store_custom",
     "tags",
-    "likes"
+    "likes",
+    "core",
 ]
 
+# requests come to middleware & pass to next ones or return response
+# job of middleware: read user info from request & set user attr. on request object
 MIDDLEWARE = [
     "debug_toolbar.middleware.DebugToolbarMiddleware",
     "django.middleware.security.SecurityMiddleware",
@@ -149,7 +151,9 @@ DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 REST_FRAMEWORK = {
     'COERCE_DECIMAL_TO_STRING': False,
     # with DEFAULT_PAGINATION_CLASS, no need to specify pagination for each view/class
-    'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.PageNumberPagination',
+    # 'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.PageNumberPagination',
     # 'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.LimitOffsetPagination',
-    'PAGE_SIZE': 10
+    # 'PAGE_SIZE': 10
 }
+
+AUTH_USER_MODEL = 'core.User'
