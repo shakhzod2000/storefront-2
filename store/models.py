@@ -68,7 +68,9 @@ class Customer(models.Model):
         choices=MEMBERSHIP_CHOICES, 
         default=MEMBERSHIP_BRONZE
     )
-    user = models.OneToOneField(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
+    user = models.OneToOneField(
+        settings.AUTH_USER_MODEL, on_delete=models.CASCADE
+    )
 
     def __str__(self):
         return f'{self.user.first_name} {self.user.last_name}'
@@ -83,6 +85,9 @@ class Customer(models.Model):
     
     class Meta:
         ordering = ['user__first_name', 'user__last_name']
+        permissions = [
+            ('view_history', 'Can view history')
+        ]
 
 
 class Order(models.Model):
@@ -112,7 +117,8 @@ class OrderItem(models.Model):
     # prevent negative values with `PositiveSmallIntegerField()`
     # max of PositiveSmallIntegerField = 32767, 16-b int (2^15 - 1)
     quantity = models.PositiveSmallIntegerField()
-    unit_price = models.DecimalField(max_digits=6, decimal_places=2)
+    unit_price = models.DecimalField(
+        max_digits=6, decimal_places=2)
 
 
 class Address(models.Model):
