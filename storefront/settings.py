@@ -31,6 +31,7 @@ INSTALLED_APPS = [
     "django.contrib.staticfiles",
     "django_filters",
     "rest_framework",
+    "djoser",
     "playground",
     "debug_toolbar",
     "store",
@@ -143,15 +144,23 @@ REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': (
         'rest_framework_simplejwt.authentication.JWTAuthentication',
     ),
+<<<<<<< HEAD
     # 'DEFAULT_PERMISSION_CLASSES': [
     #     'rest_framework.permissions.IsAuthenticated'
     # ],
+=======
+}
+
+SIMPLE_JWT = {
+   'AUTH_HEADER_TYPES': ('JWT',),
+>>>>>>> 1ecd32d1dea72500a859144e08de7e420a893bd4
 }
 
 AUTH_USER_MODEL = 'core.User'
 
 DJOSER = {
     'SERIALIZERS': {
+<<<<<<< HEAD
         'user_create': 'core.serializers.UserCreateSerializer',
         'current_user': 'core.serializers.UserSerializer',
     }
@@ -162,3 +171,8 @@ SIMPLE_JWT = {
     "ACCESS_TOKEN_LIFETIME": timedelta(days=1),
     # "ACCESS_TOKEN_LIFETIME": timedelta(minutes=5),
 }
+=======
+        'user_create': 'core.serializers.UserCreateSerializer'
+    }
+}
+>>>>>>> 1ecd32d1dea72500a859144e08de7e420a893bd4

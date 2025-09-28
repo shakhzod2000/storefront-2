@@ -13,7 +13,13 @@ urlpatterns = [
     path('playground/', include('playground.urls')),
     path('store/', include('store.urls')),
     path('auth/', include('djoser.urls')),
+<<<<<<< HEAD
     path('auth/', include('djoser.urls.jwt')),
     path('_debug_/', include(debug_toolbar.urls)),
 ]
 # ] + debug_toolbar_urls()
+=======
+    path('auth/', include('djoser.urls.jwt'))
+    # path('_debug_/', include(debug_toolbar.urls)),
+] + debug_toolbar_urls()
+>>>>>>> 1ecd32d1dea72500a859144e08de7e420a893bd4

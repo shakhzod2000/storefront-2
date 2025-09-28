@@ -7,14 +7,23 @@ from rest_framework.filters import SearchFilter, OrderingFilter
 from rest_framework.pagination import PageNumberPagination
 from rest_framework.permissions import IsAuthenticated, AllowAny, DjangoModelPermissions, IsAdminUser, DjangoModelPermissionsOrAnonReadOnly
 from rest_framework.response import Response
+<<<<<<< HEAD
 from rest_framework.mixins import CreateModelMixin, ListModelMixin, UpdateModelMixin, RetrieveModelMixin, DestroyModelMixin
+=======
+from rest_framework.mixins import CreateModelMixin, ListModelMixin, RetrieveModelMixin, DestroyModelMixin, UpdateModelMixin
+>>>>>>> 1ecd32d1dea72500a859144e08de7e420a893bd4
 from rest_framework.viewsets import ModelViewSet, GenericViewSet
 from rest_framework import status
 from .filters import ProductFilter
 from .pagination import DefaultPagination
+<<<<<<< HEAD
 from .permissions import IsAdminOrReadOnly, FullDjangoModelPermissions, ViewCustomerHistoryPermission
 from .models import Product, Collection, OrderItem, Review, Cart, CartItem, Customer, Order
 from .serializers import ProductSerializer, CollectionSerializer, ReviewSerializer, CartSerializer, CartItemSerializer, AddCartItemSerializer, UpdateCartItemSerializer, CustomerSerializer, OrderSerializer
+=======
+from .models import Product, Collection, OrderItem, Review, Cart, CartItem, Customer
+from .serializers import ProductSerializer, CollectionSerializer, ReviewSerializer, CartSerializer, CartItemSerializer, AddCartItemSerializer, UpdateCartItemSerializer, CustomerSerializer
+>>>>>>> 1ecd32d1dea72500a859144e08de7e420a893bd4
 
 
 # pylint: disable=no-member
@@ -112,6 +121,7 @@ class CartItemViewSet(ModelViewSet):
             .select_related('product')
 
 
+<<<<<<< HEAD
 class CustomerViewSet(ModelViewSet):
     queryset = Customer.objects.all()
     serializer_class = CustomerSerializer
@@ -145,3 +155,11 @@ class OrderViewSet(ModelViewSet):
     queryset = Order.objects.all()
     serializer_class = OrderSerializer
     permission_classes = [AllowAny]
+=======
+class CustomerViewSet(CreateModelMixin,
+                      RetrieveModelMixin,
+                      UpdateModelMixin,
+                      GenericViewSet):
+    queryset = Customer.objects.all()
+    serializer_class = CustomerSerializer
+>>>>>>> 1ecd32d1dea72500a859144e08de7e420a893bd4
