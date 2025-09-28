@@ -5,10 +5,10 @@ name = "pypi"
 
 [packages]
 django = "*"
-django-debug-toolbar = "*"
 python-dotenv = "*"
-psycopg = "*"
 djangorestframework = "*"
+django-debug-toolbar = "*"
+psycopg = "*"
 drf-nested-routers = "*"
 django-filter = "*"
 

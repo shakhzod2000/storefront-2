@@ -2,7 +2,8 @@
 from decimal import Decimal
 from django.db.models import Count
 from rest_framework import serializers
-from .models import Product, Collection, Review, Cart, CartItem
+from .models import Product, Collection, Review, Cart, CartItem, Customer, Order
+
 
 # pylint: disable=no-member
 class CollectionSerializer(serializers.ModelSerializer):
@@ -48,7 +49,9 @@ class ReviewSerializer(serializers.ModelSerializer):
 
     def create(self, validated_data):
         product_id = self.context['product_id']
-        return Review.objects.create(product_id=product_id, **validated_data)
+        return Review.objects.create(
+            product_id=product_id, **validated_data
+        )
 
 
 class SimpleProductSerializer(serializers.ModelSerializer):
@@ -117,3 +120,20 @@ class UpdateCartItemSerializer(serializers.ModelSerializer):
     class Meta:
         model = CartItem
         fields = ['quantity']
+
+
+class CustomerSerializer(serializers.ModelSerializer):
+    user_id = serializers.IntegerField(read_only=True)
+    
+    class Meta:
+        model = Customer
+        fields = ['id', 'user_id', 'phone', 'birth_date', 'membership']
+
+
+class OrderSerializer(serializers.ModelSerializer):
+    items = serializers.DictField()
+    
+    class Meta:
+        model = Order
+        fields = ['id', 'customer', 'placed_at', 
+                  'payment_status', 'items']
