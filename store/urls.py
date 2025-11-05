@@ -5,20 +5,29 @@ from . import views
 # from pprint import pprint  # pprint(pretty print)
 
 
+# basename = prefix for 'name=' of views: -list, -detail
 router = routers.DefaultRouter()
-router.register('products', views.ProductViewSet, basename='products')
+router.register(
+    'products', views.ProductViewSet, basename='products')
 router.register('collections', views.CollectionViewSet)
 router.register('carts', views.CartViewSet)
 router.register('customers', views.CustomerViewSet)
-router.register('orders', views.OrderViewSet)
+router.register('orders', views.OrderViewSet, basename='orders')
 # pprint(router.urls)
 
-products_router = routers.NestedDefaultRouter(router, 'products', lookup='product')
+products_router = routers.NestedDefaultRouter(
+    router, 'products', lookup='product')
 # basename = prefix for generating name of routes
-products_router.register('reviews', views.ReviewViewSet, basename='product-reviews')
+# basename is set if 'get_queryset' is overridden in view
+products_router.register(
+    'reviews', views.ReviewViewSet, basename='product-reviews')
+products_router.register(
+    'images', views.ProductImageViewSet, basename='product-images')
 
-carts_router = routers.NestedDefaultRouter(router, 'carts', lookup='cart')
-carts_router.register('items', views.CartItemViewSet, basename='cart-items')
+carts_router = routers.NestedDefaultRouter(
+    router, 'carts', lookup='cart')
+carts_router.register(
+    'items', views.CartItemViewSet, basename='cart-items')
 
 
 # pass type & variable with <type:var>

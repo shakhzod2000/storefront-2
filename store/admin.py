@@ -1,4 +1,5 @@
 from django.contrib import admin, messages
+from django.contrib.contenttypes.admin import GenericTabularInline
 from django.db.models.aggregates import Count
 from django.utils.html import format_html
 from django.utils.http import urlencode
@@ -22,6 +23,21 @@ class InventoryFilter(admin.SimpleListFilter):
             return queryset.filter(inventory__lt=10)
 
 
+
+class ProductImageInline(admin.TabularInline):
+    model = models.ProductImage
+    autocomplete_fields = ['product']
+    max_num = 1
+    readonly_fields = ['thumbnail']
+
+    def thumbnail(self, instance):
+        if instance.image.name != '':
+            return format_html(
+                f'<img src="{instance.image.url}" class="thumbnail" />')
+        return ''
+
+
+
 # make ProductAdmin() an admin model for Product() class
 @admin.register(models.Product)
 class ProductAdmin(admin.ModelAdmin):
@@ -31,6 +47,7 @@ class ProductAdmin(admin.ModelAdmin):
     autocomplete_fields = ['collection']
     prepopulated_fields = {'slug': ['title']}
     actions = ['clear_inventory']
+    inlines = [ProductImageInline]
     list_display = ['title', 'unit_price',
                     'inventory_status', 'collection_title']
     list_editable = ['unit_price']
@@ -60,6 +77,14 @@ class ProductAdmin(admin.ModelAdmin):
             f'{updated_count} products were successfully updated.',
             messages.ERROR
         )
+
+    class Media:
+        css = {
+            'all': ['store/styles.css'], # applied everywhere
+            # 'screen': ['styles.css'], # applied to screens
+            # 'print': ['styles.css'] # applied when printing a page
+        }
+
 
 
 @admin.register(models.Customer)

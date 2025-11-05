@@ -1,9 +1,11 @@
 # store/models.py
 from django.contrib import admin
 from django.conf import settings
-from django.core.validators import MinValueValidator
+from django.core.validators import MinValueValidator, FileExtensionValidator
 from django.db import models
 from uuid import uuid4
+from .validators import validate_file_size
+
 
 # pylint: disable=no-member
 # create tables(models) in DB
@@ -36,9 +38,11 @@ class Product(models.Model):
         max_digits=6,
         decimal_places=2,
         validators=[MinValueValidator(1)])
-    inventory = models.IntegerField(validators=[MinValueValidator(0)])
+    inventory = models.IntegerField(
+        validators=[MinValueValidator(0)])
     last_update = models.DateTimeField(auto_now=True)  # auto_now - updates(overwrites) datetime on every Product update
-    collection = models.ForeignKey(Collection, on_delete=models.PROTECT, related_name='products')
+    collection = models.ForeignKey(
+        Collection, on_delete=models.PROTECT, related_name='products')
     # ↓ Django creates reverse relationship btwn Promotion & Product
     promotions = models.ManyToManyField(Promotion, blank=True)
 
@@ -48,6 +52,22 @@ class Product(models.Model):
     class Meta:
         ordering=['title']
 
+
+class ProductImage(models.Model):
+    product = models.ForeignKey(
+        Product, on_delete=models.CASCADE, related_name='product_images')
+    image = models.ImageField(
+        upload_to='store/images',
+        validators=[validate_file_size]
+    )
+    # image = models.FileField(
+    #     upload_to='store/images', 
+    #     validators=[
+    #         FileExtensionValidator(
+    #             allowed_extensions=['pdf']
+    #         )
+    #     ]
+    # )
 
 
 class Customer(models.Model):
@@ -101,8 +121,10 @@ class Order(models.Model):
         (FAILED_PAYMENT, 'Failed')
     ]
     placed_at = models.DateTimeField(auto_now_add=True) # auto_now_add - adds datetime for each product update(doesn't overwrite)
-    payment_status = models.CharField(max_length=1, choices=PAYMENT_STATUSES, default=PENDING_PAYMENT)
-    customer = models.ForeignKey(Customer, on_delete=models.PROTECT)
+    payment_status = models.CharField(
+        max_length=1, choices=PAYMENT_STATUSES, default=PENDING_PAYMENT)
+    customer = models.ForeignKey(
+        Customer, on_delete=models.PROTECT)
 
     class Meta:
         permissions = [
@@ -112,8 +134,10 @@ class Order(models.Model):
 
 class OrderItem(models.Model):
     # Django creates reverse relationship with Order & Product classes
-    order = models.ForeignKey(Order, on_delete=models.PROTECT)
-    product = models.ForeignKey(Product, on_delete=models.PROTECT, related_name='orderitems')
+    order = models.ForeignKey(
+        Order, on_delete=models.PROTECT, related_name='items')
+    product = models.ForeignKey(
+        Product, on_delete=models.PROTECT, related_name='orderitems')
     # prevent negative values with `PositiveSmallIntegerField()`
     # max of PositiveSmallIntegerField = 32767, 16-b int (2^15 - 1)
     quantity = models.PositiveSmallIntegerField()
@@ -138,9 +162,11 @@ class Cart(models.Model):
 
 
 class CartItem(models.Model):
-    cart = models.ForeignKey(Cart, on_delete=models.CASCADE, related_name='items')
+    cart = models.ForeignKey(
+        Cart, on_delete=models.CASCADE, related_name='items')
     # if product deleted, it should be removed from all CartItems
-    product = models.ForeignKey(Product, on_delete=models.CASCADE)
+    product = models.ForeignKey(
+        Product, on_delete=models.CASCADE)
     quantity = models.PositiveSmallIntegerField(
         validators=[MinValueValidator(1)]
     )
