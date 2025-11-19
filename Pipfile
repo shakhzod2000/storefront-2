@@ -16,6 +16,11 @@ djangorestframework-simplejwt = "*"
 pillow = "*"
 
 [dev-packages]
+pytest = "*"
+pytest-django = "*"
+pytest-watch = "*"
+model-bakery = "*"
+locust = "*"
 
 [requires]
 python_version = "3.13"
